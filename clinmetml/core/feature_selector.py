@@ -1085,7 +1085,24 @@ def mrmr_feature_selection(df: pd.DataFrame,
         raise ImportError("pymrmr module not available")
     
     # mRMR需要完整的数据框
-    mr = pymrmr.mRMR(df, 'MIQ', top_k)
+    if target_col not in df.columns:
+        raise ValueError(f"Target column not found: {target_col}")
+
+    if not df.columns.is_unique:
+        raise ValueError("Duplicate column names are not supported")
+
+    predictors = [c for c in df.columns if c != target_col]
+    if not predictors:
+        raise ValueError("No predictor columns available")
+
+    ordered_df = df.loc[:, [target_col] + predictors].copy()
+
+    mr = pymrmr.mRMR(
+        ordered_df, 'MIQ', min(top_k, len(predictors))
+    )
+
+    if not set(mr).issubset(predictors):
+        raise RuntimeError("mRMR returned invalid predictor names")
     importances_df = pd.Series(mr)
     
     print(f"mRMR - 已完成: {iteration}")
