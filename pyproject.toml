@@ -56,7 +56,7 @@ dependencies = [
     # are available after a normal pip install)
     "Cython>=0.29.0",
     "pymrmr>=0.1.0",
-    "skrebate>=0.62",
+    "skrebate>=0.7",
 ]
 
 [project.optional-dependencies]
